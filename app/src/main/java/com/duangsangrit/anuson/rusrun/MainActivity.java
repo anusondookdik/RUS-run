@@ -1,12 +1,18 @@
 package com.duangsangrit.anuson.rusrun;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText userEditText, passwordEditText;
     private ImageView imageView;
     private  static  final String urlLogo = "http://swiftcodingthai.com/rus/image/logo_rus.png";
+    private String userString, passwordString ;
+    private static final String urlJSON ="http://swiftcodingthai.com/rus/get_user_dookdik.php";
 
 
     @Override
@@ -25,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Bind Widget
         userEditText = (EditText)findViewById(R.id.editText4);
-        passwordEditText = (EditText) findViewById(R.id.editText);
+        passwordEditText = (EditText) findViewById(R.id.edtpass);
         imageView = (ImageView)findViewById(R.id.imageView6);
 
         // Load image fo server
@@ -37,10 +45,76 @@ public class MainActivity extends AppCompatActivity {
     }  //Main Method
 
 
+    //Create Inner Class
+
+    private class SynUser extends AsyncTask<Void, Void, String> {
+
+
+        //Explicit
+        private String myJSONString, myUserString,myPasswordString;
+        private Context context;
+
+        public SynUser(String myJSONString, String myUserString, String myPasswordString, Context context) {
+            this.myJSONString = myJSONString;
+            this.myUserString = myUserString;
+            this.myPasswordString = myPasswordString;
+            this.context = context;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            try {
+
+                OkHttpClient okHttpClient = new OkHttpClient();
+                Request.Builder builder = new Request.Builder();
+                Request request = builder.url(myJSONString).build();
+                Response response = okHttpClient.newCall(request).execute();
+                return response.body().string();
+
+            } catch (Exception e) {
+                Log.d("RusV1","e doIn ==>" +e.toString());
+                return null;
+            }
+
+
+
+        }   // doInBack
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            Log.d("RusV1","JSON ==>"+s);
+
+        }   //onPost
+
+    }
+
+    //SynUser Class
+
     public void clickSignIn(View view) {
 
-    } //clicckSignIn
+        userString = userEditText.getText().toString().trim();
+        passwordString = passwordEditText.getText().toString().trim();
 
+        //check space
+
+        if (userString.equals("") || passwordString.equals("")) {
+            //Have space
+            MyAlert myAlert = new MyAlert();
+            myAlert.myDialog(this, "Have Space", "Please Faill All Every Blank");
+
+        }else {
+            SynUser synUser = new SynUser(urlJSON,userString,passwordString,this);
+            synUser.execute();
+
+
+        }//if
+
+
+
+    }
 
     public void clickSignUpMain(View view) {
         startActivity(new Intent(MainActivity.this,SignUpActivity.class));

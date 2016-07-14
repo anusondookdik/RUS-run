@@ -23,7 +23,8 @@
             android:id="@+id/button"
             android:layout_weight="1"
             android:textColor="@color/thxt"
-            android:textColorHint="@color/thxt" />
+            android:textColorHint="@color/thxt"
+            android:onClick="clickSignIn" />
 
         <Button
             android:layout_width="wrap_content"
@@ -76,7 +77,8 @@
             android:inputType="textPassword|text"
             android:hint="Password :"
             android:textColor="@color/thxt"
-            android:textColorHint="@color/thxt" />
+            android:textColorHint="@color/thxt"
+            android:id="@+id/edtpass" />
     </LinearLayout>
 
 </RelativeLayout>
